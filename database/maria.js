@@ -1,5 +1,4 @@
 const maria = require("mysql");
-require("dotenv").config();
 
 const pool = maria.createConnection({
   host: process.env.DB_IP_ADDRESS,

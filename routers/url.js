@@ -22,7 +22,7 @@ router.get("/:alias", (req, res, next) => {
             .status(404)
             .send({ status: 404, message: "존재하지 않는 URL 입니다." });
             */
-          res.redirect("/notfound.html");
+          res.redirect("/notfound");
         }
       }
     }
