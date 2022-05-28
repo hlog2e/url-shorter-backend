@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-
+const requestIp = require("request-ip");
 const mariaDB = require("../database/maria");
 mariaDB.connect();
 
@@ -53,13 +53,10 @@ router.post("/", (req, res, next) => {
   }
 });
 router.post("/", (req, res, next) => {
+  const reqIP = requestIp.getClientIp(req);
   mariaDB.query(
     "insert into urls(origin_url, alias, origin_ip) values(?,?,?)",
-    [
-      req.body.origin_url,
-      req.body.alias,
-      req.headers["x-forwarded-for"] || req.socket.remoteAddress,
-    ],
+    [req.body.origin_url, req.body.alias, reqIP],
     (err, rows, fields) => {
       if (err) {
         if (err.code == "ER_DUP_ENTRY") {
