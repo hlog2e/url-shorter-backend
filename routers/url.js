@@ -29,6 +29,20 @@ router.get("/:alias", (req, res, next) => {
   );
 });
 router.post("/", (req, res, next) => {
+  //Long Url 의 유효성 검사 로직
+  const urlRegex =
+    /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi;
+  if (!urlRegex.test) {
+    res.status(400).send({
+      status: 400,
+      message: "단축할 URL 주소가 올바르지 않은 형식입니다.",
+    });
+  } else {
+    next();
+  }
+});
+router.post("/", (req, res, next) => {
+  //Alias 미 지정시 랜덤한 6자 영단어 생성 로직
   if (
     !req.body.origin_url.startsWith("http://") &&
     !req.body.origin_url.startsWith("https://")
@@ -53,6 +67,7 @@ router.post("/", (req, res, next) => {
   }
 });
 router.post("/", (req, res, next) => {
+  //최종적인 DB Insert 로직
   const reqIP = requestIp.getClientIp(req);
   mariaDB.query(
     "insert into urls(origin_url, alias, origin_ip) values(?,?,?)",
@@ -60,7 +75,9 @@ router.post("/", (req, res, next) => {
     (err, rows, fields) => {
       if (err) {
         if (err.code == "ER_DUP_ENTRY") {
-          res.status(400).send({ status: 400, message: "중복된 URL 입니다." });
+          res
+            .status(400)
+            .send({ status: 400, message: "이미 사용 중인 URL 주소입니다." });
         } else {
           res.status(400).send({ status: 400, message: "잘못된 요청입니다." });
           console.error(err);
