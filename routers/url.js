@@ -32,7 +32,7 @@ router.post("/", (req, res, next) => {
   //Long Url 의 유효성 검사 로직
   const urlRegex =
     /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi;
-  if (!urlRegex.test) {
+  if (!urlRegex.test(req.body.origin_url)) {
     res.status(400).send({
       status: 400,
       message: "단축할 URL 주소가 올바르지 않은 형식입니다.",
